@@ -1,19 +1,18 @@
 {
   "name": "visualiser",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "D3 visualisation tools",
   "main": "index.js",
   
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node example.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NikolayBlagoev/visualiser.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Nikolay Blagoev",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/NikolayBlagoev/visualiser/issues"
@@ -21,8 +20,6 @@
   "homepage": "https://github.com/NikolayBlagoev/visualiser#readme",
   "dependencies": {
     "d3": "^7.8.2",
-    "d3-node": "^3.0.0",
-    "express": "^4.18.2",
-    "jsdom": "^21.0.0"
+    "d3-node": "^3.0.0"
   }
 }
