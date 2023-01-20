@@ -1,0 +1,27 @@
+<script src="https://d3js.org/d3.v6.js"></script>
+<script>
+
+  
+
+    const svg = d3.selectAll("").append("svg").attr("width", 400)
+    .attr("height", 600 ).append("g").attr("transform", "translate(100,200)")
+    
+    var data = [{"value": 80, "name": "completed"}, {"value": 20, "name": "not"}];
+    svg.append("g")
+            .selectAll('pieces')
+            .data(data)
+            .enter()
+            .append('path')
+            .attr('d', d3.arc()
+              .innerRadius(60 - 10) // This is the size of the donut hole
+              .outerRadius(60)
+            )
+            .attr('fill', "red")
+            .classed('donut-arc', true);
+
+</script>
+
+<body>
+<div id="figure"></div>
+
+</body>
