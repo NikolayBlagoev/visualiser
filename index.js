@@ -209,6 +209,8 @@ module.exports = class Visualiser {
       });
     return this;
   }
+
+  connectedScatterPlot = this.line
   
 
  
