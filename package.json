@@ -1,6 +1,6 @@
 {
   "name": "visualiser",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "D3 visualisation tools",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,6 @@
   "homepage": "https://github.com/NikolayBlagoev/visualiser#readme",
   "dependencies": {
     "d3": "^7.8.2",
-    "d3-node": "^3.0.0",
-    "express": "^4.18.2"
+    "d3-node": "^3.0.0"
   }
 }
