@@ -124,7 +124,7 @@ Creates a line chart where each elemnt is emphasised with a circle:
     inst.scatterPlot({data: exampleDataLine, max_render: 300});
 ```
 
-![Line Plot](./imgs/line.png)<br/>
+![Line Plot](./imgs/scatter.png)<br/>
 For redundancy we also provide connectedScatterPlot which does the same function with the same parameters<br/>
 <br/>
 The data array contains elements with each having an 'x' and 'y' attribute in numerical form. The line will connect the points in the order they appear in the array, so you might need to presort it according to the x axis. Other attributes:<br/>
