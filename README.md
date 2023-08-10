@@ -29,7 +29,7 @@ Creates a radar chart:
     inst.radar({data: exampleData, features: exampleFeatures});
 ```
 
-![Radar Plot](./imgs/radar.png)
+![Radar Plot](./imgs/radar.png)<br/>
 For redundancy we also provide spider chart with the same syntax as the radar.
 <br/>
 Requires a features array which specifies the features on each axis (can be of any length above 2). The data array contains objects which have a field for each of the features with a corresponding numeric value (between 0 and 10). The data array CAN contain other values as well! Other parameters are:<br/>
@@ -82,7 +82,7 @@ fontSize -> font size of the inner text<br/>
 text  -> string text to put in the middle of the donut<br/>
 textOffsetX -> offset of the text from the left side of the hole<br/>
 textOffsetY -> offset of the graphic from the top side of the hole<br/>
-
+toInclude -> array of attributes to be included in the final elements! By default value and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
 
 ### Line (connected scatterplot) chart:
 
@@ -95,8 +95,8 @@ Creates a line chart where each elemnt is emphasised with a circle:
     inst.line({data: exampleDataLine, lineWidth : (i) => 4});
 ```
 
-![Line Plot](./imgs/line.png)
-For redundancy we also provide connectedScatterPlot which does the same function with the same parameters
+![Line Plot](./imgs/line.png)<br/>
+For redundancy we also provide connectedScatterPlot which does the same function with the same parameters<br/>
 <br/>
 The data array contains elements with each having an 'x' and 'y' attribute in numerical form. The line will connect the points in the order they appear in the array, so you might need to presort it according to the x axis. Other attributes:<br/>
 min_render -> The smallest value on the y-axis<br/>
@@ -108,7 +108,36 @@ min_el -> The smallest value on the x-axis<br/>
 max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
 pointFill -> function, which given the index of the point, returns a colour<br/>
+toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
 
+
+
+
+### Scatterplot chart:
+
+Creates a line chart where each elemnt is emphasised with a circle:
+
+```js
+    const visualiser = require('visualiser');
+    const inst = new visualiser({width : 1200, height : 1200});
+    const exampleDataLine = [{x: 1, y: 300},{x: 2, y: 5},{x: 3, y: 8},{x: 4, y: 2},{x: 5, y: 6},{x: 4, y: 20},{x: 9, y: 12},{x: 2, y: 108},{x: 6, y: 54}];
+    inst.scatterPlot({data: exampleDataLine, max_render: 300});
+```
+
+![Line Plot](./imgs/line.png)<br/>
+For redundancy we also provide connectedScatterPlot which does the same function with the same parameters<br/>
+<br/>
+The data array contains elements with each having an 'x' and 'y' attribute in numerical form. The line will connect the points in the order they appear in the array, so you might need to presort it according to the x axis. Other attributes:<br/>
+min_render -> The smallest value on the y-axis<br/>
+max_render -> The highest value on the y-axis<br/>
+offsetX -> offset of the graphic from the left side<br/>
+offsetY -> offset of the graphic from the top side<br/>
+pointRadius -> the radius of each point<br/>
+min_el -> The smallest value on the x-axis<br/>
+max_el -> The largest value on the x-axis<br/>
+tickCount -> How many values to be on the x-axis<br/>
+pointFill -> function, which given the index of the point, returns a colour<br/>
+toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
 
 ### Bar chart:
 
@@ -132,5 +161,6 @@ axisXWidth -> width of x-axis<br/>
 colorBar -> function which given an element returns a colour for it<br/>
 fontSize -> function which given an element returns a font size for it<br/>
 yFontSize -> give the font for the y-axis<br/>
+toInclude -> array of attributes to be included in the final elements! By default value and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
 
 
