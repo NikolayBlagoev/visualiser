@@ -20,8 +20,7 @@ module.exports = class Visualiser {
     colorRange = ["green", "red"], fontSize = 30, text = "5", textOffsetX = offsetX, textOffsetY = offsetY}){
   
     
-    
-    
+  
     const color = d3.scaleOrdinal()
                     .domain(domain)
                     .range(colorRange);
@@ -149,7 +148,7 @@ module.exports = class Visualiser {
 
   spider = this.radar
 
-  line = function({data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
+  lines = function({data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
                   axisYHeight= this.height/2, axisXWidth = this.width/2, pointRadius = 10,
                   min_el = 0, max_el = 10, tickCount = 10, tickFormatter = (x) => x, lineColor = (i) => "green",
                   lineWidth = (i) => 5, pointFill = (i) => "green"}) {
@@ -175,6 +174,7 @@ module.exports = class Visualiser {
 
     let i = 0;
     data.forEach((container) => {
+      console.log(container)
       localSvg.append("path")
         .datum(container)
         .attr("d", d3.line()
@@ -210,8 +210,90 @@ module.exports = class Visualiser {
     return this;
   }
 
+  connectedScatterPlots = this.lines
+  line = function({data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
+    axisYHeight= this.height/2, axisXWidth = this.width/2, pointRadius = 10,
+    min_el = 0, max_el = 10, tickCount = 10, tickFormatter = (x) => x, lineColor = (i) => "green",
+    lineWidth = (i) => 5, pointFill = (i) => "green"}) {
+        return this.lines({data: [data] , min_render:min_render, max_render:max_render, YOffset:YOffset, XOffset:XOffset,
+          axisYHeight:axisYHeight, axisXWidth:axisXWidth, pointRadius:pointRadius,
+          min_el:min_el, max_el:max_el, tickCount:tickCount, tickFormatter:tickFormatter, lineColor:lineColor,
+          lineWidth:lineWidth, pointFill:pointFill})
+    }
   connectedScatterPlot = this.line
+
+  scatterPlot = function({data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
+    axisYHeight= this.height/2, axisXWidth = this.width/2, pointRadius = 10,
+    min_el = 0, max_el = 10, tickCount = 10, tickFormatter = (x) => x, pointFill = (i) => "green"}) {
+        return this.lines({data: [data] , min_render:min_render, max_render:max_render, YOffset:YOffset, XOffset:XOffset,
+          axisYHeight:axisYHeight, axisXWidth:axisXWidth, pointRadius:pointRadius,
+          min_el:min_el, max_el:max_el, tickCount:tickCount, tickFormatter:tickFormatter, lineColor:(i)=>"green",
+          lineWidth:(i)=>0, pointFill:pointFill})
+  }
   
+
+  bar = function({data, max_val = -1, YOffset = 100, XOffset = 100, axisYHeight= this.height/2, axisXWidth = this.width/2,
+    strokeWidth = 2, strokeColor = "black", barMargin = 0, colorBar = (d) => "blue", fontSize = (d)=>"15px", yFontSize="15px"}){
+    
+      
+    
+
+    const max_el = max_val == -1 ? data.reduce((acc, e1) => acc = acc > e1.value ? acc : e1.value, -1000) : max_val;
+    
+    let localSvg = this.svg.append("g")
+    .style("user-select", "none")
+    .attr("transform", `translate(${YOffset}, ${XOffset})`)
+    // Create the X-axis band scale
+    const x = d3.scaleBand()
+      .range([0, axisXWidth])
+      .domain(data.map(d => d.name))
+      .padding(0.1);
+
+    // Draw the X-axis on the DOM
+    localSvg.append("g")
+      .attr("transform", "translate(0," + axisYHeight + ")")
+      .call(d3.axisBottom(x).ticks(data.length))
+      .selectAll("text")
+      .attr("transform", "translate(-10,0) rotate(-45)")
+      .style("text-anchor", "end")
+      .attr("font-size", fontSize);
+
+    // Create the Y-axis band scale
+    const y = d3.scaleLinear()
+      .domain([0, max_el])
+      .range([axisYHeight, 0]);
+
+    // Draw the Y-axis on the DOM
+    localSvg.append("g")
+      .call(d3.axisLeft(y))
+      .attr("font-size", yFontSize);
+
+
+    // Create and fill the bars
+    localSvg.selectAll("bars")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("x", d => x(d.name))
+      .attr("y", d => y(d.value))
+      .attr("transform", "translate("  + barMargin/2+",0)")
+      .attr("width", x.bandwidth() - barMargin)
+      .attr("height", d => axisYHeight - y(d.value) - strokeWidth)
+      .attr("stroke", strokeColor)
+      .attr("stroke-width", strokeWidth)
+      .attr("fill", colorBar);
+      // .on("mouseover", (e, d) => {
+      //   tooltip.setText(`Value: ${d.Value}`)
+      //          .setVisible();
+      //   d3.select(e.target).attr("fill", highlightedBarColor);
+      // })
+      // .on("mouseout", (e, d) => {
+      //   tooltip.setHidden();
+      //   if (highlighted.includes(d.Name)) { d3.select(e.target).attr("fill", gameBarColor); }
+      //   else { d3.select(e.target).attr("fill", barColor); }
+      // });
+      return this;
+  }
 
  
 }
