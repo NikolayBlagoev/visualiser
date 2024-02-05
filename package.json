@@ -1,6 +1,6 @@
 {
   "name": "visualiser",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "D3 visualisation tools",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,11 @@
     "type": "git",
     "url": "git+https://github.com/NikolayBlagoev/visualiser.git"
   },
-  "keywords": ["d3", "graphics", "charts"],
+  "keywords": [
+    "d3",
+    "graphics",
+    "charts"
+  ],
   "author": "Nikolay Blagoev",
   "license": "ISC",
   "bugs": {
