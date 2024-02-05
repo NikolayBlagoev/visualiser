@@ -34,25 +34,25 @@ For redundancy we also provide spider chart with the same syntax as the radar.
 <br/>
 Requires a features array which specifies the features on each axis (can be of any length above 2). The data array contains objects which have a field for each of the features with a corresponding numeric value (between 0 and 10). The data array CAN contain other values as well! Other parameters are:<br/>
 
-maxRadius -> the radius of the chart (ex. 100)<br/>
+maxRadius -> the radius of the chart (default 100)<br/>
 
-fillColors -> array of colour values for each object on the chart (ex. ["rgba(0,255,0,0.7)", "rgba(255,0,0,0.7)"])<br/>
+fillColors -> array of colour values for each object on the chart (default ["rgba(0,255,0,0.7)", "rgba(255,0,0,0.7)"])<br/>
 
-centerHorizontalOffset -> the horizontal offset of the center of the spider/radar chart  (ex. 200)<br/>
+centerHorizontalOffset -> the horizontal offset of the center of the spider/radar chart  (default 200)<br/>
 
-centerVerticalOffset -> the vertical offset of the center of the spider/radar chart  (ex. 200)<br/>
+centerVerticalOffset -> the vertical offset of the center of the spider/radar chart  (default 200)<br/>
 
-labelFontSize -> the font size of the labels (ex. 10)<br/>
+labelFontSize -> the font size of the labels (default 10)<br/>
 
-ticks -> array of numbers, giving which tick values to be shown on the spider chart (ex. [1, 2.5, 5, 7.5, 10] - this will show the position of the 1st, 2.5th, 5th, ect. values on the spider chart)<br/>
+ticks -> array of numbers, giving which tick values to be shown on the spider chart (default [1, 2.5, 5, 7.5, 10] - this will show the position of the 1st, 2.5th, 5th, ect. values on the spider chart)<br/>
 
-strokeColor -> function taking a tick value and mapping it to a colour (ex. (t) => "black")<br/>
+strokeColor -> function taking a tick value and mapping it to a colour (default (t) => "black")<br/>
 
-strokeHighlight -> function taking a tick value and mapping it to width size (ex. (t) => t%5==0 ? 5 : 3)<br/>
+strokeHighlight -> function taking a tick value and mapping it to width size (default (t) => t%5==0 ? 5 : 3)<br/>
 
-axisColor -> function taking an axis number and mapping it to a colour (ex. (i) => "black")<br/>
+axisColor -> function taking an axis number and mapping it to a colour (default (i) => "black")<br/>
 
-axisWidth -> function taking an axis number and mapping it to a width size (ex. (i) => 1)<br/>
+axisWidth -> function taking an axis number and mapping it to a width size (default (i) => 1)<br/>
 
 
 
@@ -73,8 +73,8 @@ Creates a donut chart:
 <br/>
 The data array contains any attributes, but it is mandatory to have a 'value' attribute in numerical form which specifies the value fot he given slice of the donut. Other attributes:<br/>
 
-outterRadius -> the radius of the chart (ex. 100)<br/>
-innerRadius -> the radius of the inner hole (ex. 60)<br/>
+outterRadius -> the radius of the chart (default 100)<br/>
+innerRadius -> the radius of the inner hole (ex 60)<br/>
 offsetX -> offset of the graphic from the left side<br/>
 offsetY -> offset of the graphic from the top side<br/>
 colorRange -> an array of colours for ach element<br/>
@@ -86,7 +86,7 @@ toInclude -> array of attributes to be included in the final elements! By defaul
 
 ### Line (connected scatterplot) chart:
 
-Creates a line chart where each elemnt is emphasised with a circle:
+Creates a line of connected dots (NOTE: By setting the fill colour of a dote to none, dots will not be displayed):
 
 ```js
     const visualiser = require('visualiser');
@@ -99,6 +99,39 @@ Creates a line chart where each elemnt is emphasised with a circle:
 For redundancy we also provide connectedScatterPlot which does the same function with the same parameters<br/>
 <br/>
 The data array contains elements with each having an 'x' and 'y' attribute in numerical form. The line will connect the points in the order they appear in the array, so you might need to presort it according to the x axis. Other attributes:<br/>
+min_render -> The smallest value on the y-axis (default 0)<br/>
+max_render -> The highest value on the y-axis (default 1000)<br/>
+offsetX -> offset of the graphic from the left side<br/>
+offsetY -> offset of the graphic from the top side<br/>
+pointRadius -> the radius of each point<br/>
+min_el -> The smallest value on the x-axis<br/>
+max_el -> The largest value on the x-axis<br/>
+tickCount -> How many values to be on the x-axis<br/>
+pointFill -> function, which given the index of the point, returns a colour<br/>
+toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
+xGridCount -> number of grid lines on the x-axis<br/>
+yGridCount -> number of grid lines on the y-axis<br/>
+xGridColour -> callable - for each tick on the x-axis provide a colour (default:  (i)=> "rgba(0,0,200,0.5)")<br/>
+yGridColour -> callable - for each tick on the y-axis provide a colour (default:  same as xGridColour)<br/>
+xFontSize -> callable - for each tick label on the x-axis define a font size (default: (i)=>"20px")<br/>
+yFontSize -> callable - for each tick label on the y-axis define a font size (default: same as xFontSize)<br/>
+xGridWidth -> callable - for each tick on the x-axis provide a thickness (default: (i)=> 1)<br/>
+yGridWidth -> callable - for each tick on the y-axis provide a thickness (default: same as xGridWidth)<br/>
+
+
+### Multiple (connected) Lines Chart:
+
+Same as a regular line, but this time you can put multiple lines on the same graphic:
+
+```js
+    const visualiser = require('visualiser');
+    const inst = new visualiser({width : 1200, height : 1200});
+    const exampleDataLines = [[{x: 1, y: 300},{x: 2, y: 5},{x: 3, y: 8},{x: 4, y: 2}],[{x: 6, y: 6},{x: 7, y: 20},{x: 8, y: 12},{x: 10, y: 108},{x: 12, y: 54}]];
+    inst.lines({data: exampleDataLines,  max_el: 13, lineWidth : (i) =>4, max_render: 500, lineColor : (i) => i == 0 ? "blue" : "orange", pointFill : (i) => "rgba(0,0,0,0)"});
+```
+
+![Lines Plot](./imgs/lines.png)<br/>
+The data array contains elements which each is an array containing elements with each having an 'x' and 'y' attribute in numerical form. The lines will connect the points in the order they appear in the array, so you might need to presort it according to the x axis. Other attributes:<br/>
 min_render -> The smallest value on the y-axis<br/>
 max_render -> The highest value on the y-axis<br/>
 offsetX -> offset of the graphic from the left side<br/>
@@ -109,13 +142,19 @@ max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
 pointFill -> function, which given the index of the point, returns a colour<br/>
 toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
-
-
+xGridCount -> number of grid lines on the x-axis<br/>
+yGridCount -> number of grid lines on the y-axis<br/>
+xGridColour -> callable - for each tick on the x-axis provide a colour (default:  (i)=> "rgba(0,0,200,0.5)")<br/>
+yGridColour -> callable - for each tick on the y-axis provide a colour (default:  same as xGridColour)<br/>
+xFontSize -> callable - for each tick label on the x-axis define a font size (default: (i)=>"20px")<br/>
+yFontSize -> callable - for each tick label on the y-axis define a font size (default: same as xFontSize)<br/>
+xGridWidth -> callable - for each tick on the x-axis provide a thickness (default: (i)=> 1)<br/>
+yGridWidth -> callable - for each tick on the y-axis provide a thickness (default: same as xGridWidth)<br/>
 
 
 ### Scatterplot chart:
 
-Creates a line chart where each elemnt is emphasised with a circle:
+Creates a line chart where each element is emphasised with a circle:
 
 ```js
     const visualiser = require('visualiser');
@@ -138,10 +177,19 @@ max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
 pointFill -> function, which given the index of the point, returns a colour<br/>
 toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
+xGridCount -> number of grid lines on the x-axis<br/>
+yGridCount -> number of grid lines on the y-axis<br/>
+xGridColour -> callable - for each tick on the x-axis provide a colour (default:  (i)=> "rgba(0,0,200,0.5)")<br/>
+yGridColour -> callable - for each tick on the y-axis provide a colour (default:  same as xGridColour)<br/>
+xFontSize -> callable - for each tick label on the x-axis define a font size (default: (i)=>"20px")<br/>
+yFontSize -> callable - for each tick label on the y-axis define a font size (default: same as xFontSize)<br/>
+xGridWidth -> callable - for each tick on the x-axis provide a thickness (default: (i)=> 1)<br/>
+yGridWidth -> callable - for each tick on the y-axis provide a thickness (default: same as xGridWidth)<br/>
+
 
 ### Bar chart:
 
-Creates a line chart where each elemnt is emphasised with a circle:
+Creates a bar chart where the height represents the chosen value:
 
 ```js
     const visualiser = require('visualiser');
@@ -156,11 +204,15 @@ Creates a line chart where each elemnt is emphasised with a circle:
 The data array contains elements with each having a 'name' and 'value' attribute in string and numerical form respectively. Other attributes:<br/>
 XOffset -> offset of the graphic from the left side<br/>
 YOffset -> offset of the graphic from the top side<br/>
+max_val -> highest value to display on y-axis (by default undefined meaning that the value will be foudn from the data given)<br/>
+min_val -> smallest value to display on y-axis (by default undefined meaning that the value will be foudn from the data given. NOTE: in order for all data to be displayed the value taken from data is biased by an additional factor of -1)<br/>
 axisYHeight -> height of y-axis<br/>
 axisXWidth -> width of x-axis<br/>
 colorBar -> function which given an element returns a colour for it<br/>
 fontSize -> function which given an element returns a font size for it<br/>
 yFontSize -> give the font for the y-axis<br/>
 toInclude -> array of attributes to be included in the final elements! By default value and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
-
+yGridCount -> number of grid lines on the y-axis (by default -1, meaning it will use the value of the max_el)<br/>
+yGridColour -> callable - for each tick on the y-axis provide a colour (default:  (i)=> "rgba(0,0,200,0.5)")<br/>
+yGridWidth -> callable - for each tick on the y-axis provide a thickness (default: (i)=> 1)<br/>
 
