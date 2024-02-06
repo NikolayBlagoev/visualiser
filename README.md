@@ -92,7 +92,7 @@ Creates a line of connected dots (NOTE: By setting the fill colour of a dote to 
     const visualiser = require('visualiser');
     const inst = new visualiser({width : 1200, height : 1200});
     const exampleDataLine = [{x: 1, y: 300},{x: 2, y: 5},{x: 3, y: 8},{x: 4, y: 2},{x: 5, y: 6}];
-    inst.line({data: exampleDataLine, lineWidth : (i) => 4});
+    inst.line({data: exampleDataLine, lineWidth :  4});
 ```
 
 ![Line Plot](./imgs/line.png)<br/>
@@ -107,7 +107,9 @@ pointRadius -> the radius of each point<br/>
 min_el -> The smallest value on the x-axis<br/>
 max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
-pointFill -> function, which given the index of the point, returns a colour<br/>
+lineWidth -> width of line (default : 5)<br/>
+lineColor -> color of line (default : "green")<br/>
+pointFill -> function, which given point returns a colour (default: (d) => "green")<br/>
 toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 xGridCount -> number of grid lines on the x-axis<br/>
 yGridCount -> number of grid lines on the y-axis<br/>
@@ -140,8 +142,10 @@ pointRadius -> the radius of each point<br/>
 min_el -> The smallest value on the x-axis<br/>
 max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
-pointFill -> function, which given the index of the point, returns a colour<br/>
-toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
+pointFill -> function, which given the point returns a colour (default: (d) => "green")<br/>
+lineWidth -> function, which given the index of the line, returns its width (default : (i) => 5)<br/>
+lineColor -> function, which given the index of the line, returns the color of line (default : (i) => "green")<br/>
+toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 xGridCount -> number of grid lines on the x-axis<br/>
 yGridCount -> number of grid lines on the y-axis<br/>
 xGridColour -> callable - for each tick on the x-axis provide a colour (default:  (i)=> "rgba(0,0,200,0.5)")<br/>
@@ -175,8 +179,9 @@ pointRadius -> the radius of each point<br/>
 min_el -> The smallest value on the x-axis<br/>
 max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
+pointFill -> function, which given the point returns a colour (default: (d) => "green")<br/>
 pointFill -> function, which given the index of the point, returns a colour<br/>
-toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
+toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 xGridCount -> number of grid lines on the x-axis<br/>
 yGridCount -> number of grid lines on the y-axis<br/>
 xGridColour -> callable - for each tick on the x-axis provide a colour (default:  (i)=> "rgba(0,0,200,0.5)")<br/>
@@ -211,8 +216,46 @@ axisXWidth -> width of x-axis<br/>
 colorBar -> function which given an element returns a colour for it<br/>
 fontSize -> function which given an element returns a font size for it<br/>
 yFontSize -> give the font for the y-axis<br/>
-toInclude -> array of attributes to be included in the final elements! By default value and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!
+toInclude -> array of attributes to be included in the final elements! By default value and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 yGridCount -> number of grid lines on the y-axis (by default -1, meaning it will use the value of the max_el)<br/>
 yGridColour -> callable - for each tick on the y-axis provide a colour (default:  (i)=> "rgba(0,0,200,0.5)")<br/>
 yGridWidth -> callable - for each tick on the y-axis provide a thickness (default: (i)=> 1)<br/>
 
+
+
+### Area Under The Curve chart:
+
+Creates an line chart with area under it highlighted:
+
+```js
+    const visualiser = require('visualiser');
+    const inst = new visualiser({width : 1200, height : 1200});
+    const exampleAuc = [{x: 0, y: 300},{x: 2, y: 5},{x: 3, y: 8},{x: 4, y: 2},{x: 5, y: 6},{x: 9, y: 12},{x: 12, y: 108},{x: 16, y: 54}]
+    inst.auc({data: exampleAuc, lineWidth : 4, max_render: 500, max_el: 16, areaColor: "rgba(0,170,170,0.6)", lineColor: "rgb(0,200,255)", pointRadius: 0});
+```
+
+![Bar Plot](./imgs/auc.png)
+
+<br/>
+The data array contains elements with each having an 'x' and 'y' attribute in numerical form. The line will connect the points in the order they appear in the array, so you might need to presort it according to the x axis. Other attributes:<br/>
+min_render -> The smallest value on the y-axis (default 0)<br/>
+max_render -> The highest value on the y-axis (default 1000)<br/>
+offsetX -> offset of the graphic from the left side<br/>
+offsetY -> offset of the graphic from the top side<br/>
+pointRadius -> the radius of each point<br/>
+min_el -> The smallest value on the x-axis<br/>
+max_el -> The largest value on the x-axis<br/>
+tickCount -> How many values to be on the x-axis<br/>
+lineWidth -> width of line (default : 5)<br/>
+lineColor -> color of line (default : "green")<br/>
+pointFill -> function, which given point returns a colour (default: (d) => "green")<br/>
+areaColor -> the color of the area under the curve (default: "rgba(0,10,190, 0.6)")<br/>
+toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
+xGridCount -> number of grid lines on the x-axis<br/>
+yGridCount -> number of grid lines on the y-axis<br/>
+xGridColour -> callable - for each tick on the x-axis provide a colour (default:  (i)=> "rgba(0,0,200,0.5)")<br/>
+yGridColour -> callable - for each tick on the y-axis provide a colour (default:  same as xGridColour)<br/>
+xFontSize -> callable - for each tick label on the x-axis define a font size (default: (i)=>"20px")<br/>
+yFontSize -> callable - for each tick label on the y-axis define a font size (default: same as xFontSize)<br/>
+xGridWidth -> callable - for each tick on the x-axis provide a thickness (default: (i)=> 1)<br/>
+yGridWidth -> callable - for each tick on the y-axis provide a thickness (default: same as xGridWidth)<br/>

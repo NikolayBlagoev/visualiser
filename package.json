@@ -1,6 +1,6 @@
 {
   "name": "visualiser",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "D3 visualisation tools",
   "main": "index.js",
   "scripts": {
