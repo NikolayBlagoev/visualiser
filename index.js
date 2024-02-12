@@ -15,6 +15,42 @@ module.exports = class Visualiser {
   visualise = function () {
     return this.d3n.html();
   }
+
+  legend = function ({ data, colours = (i) => "green", y = this.height*0.15, x = this.width-0.5*this.width, distance_elms = 25, dotRadius = 5 }) {
+    let tmp = colours
+    if(!(colours instanceof Function)){
+      if(Array.isArray(colours)){
+        
+        colours = (d,i) => tmp[i%tmp.length]
+      }else{
+        
+        colours = (i)=> tmp
+      }
+      
+    }
+    y = Math.floor(y)
+    x = Math.floor(x)
+    this.svg.selectAll("dots")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", x)
+      .attr("cy", function (d, i) { return y + i * distance_elms })
+      .attr("r", dotRadius)
+      .style("fill", colours)
+
+    this.svg.selectAll("labels")
+      .data(data)
+      .enter()
+      .append("text")
+      .attr("x", x + 3 * dotRadius)
+      .attr("y", function (d, i) { return y + i * distance_elms })
+      .style("fill", colours)
+      .text(function (d) { return d })
+      .attr("text-anchor", "left")
+      .style("alignment-baseline", "middle")
+    return this;
+  }
   donut = function ({ data, outterRadius = 70, innerRadius = 60,
     offsetX = this.width / 2, offsetY = this.height / 2, sortFunc = d => -1, domain = data.map(elem => elem.name),
     colorRange = ["green", "red"], fontSize = 30, text = "5", textOffsetX = offsetX, textOffsetY = offsetY,
@@ -119,7 +155,7 @@ module.exports = class Visualiser {
         .attr("x", i > (features.length / 2) ? label_coordinate.x + 5 : label_coordinate.x - 5)
         .attr("y", label_coordinate.y)
         .attr("text-anchor", i > (features.length / 2) ? "left" : "end")
-        .style("font-size", (d)=>labelFontSize(d))
+        .style("font-size", (d) => labelFontSize(d))
         .text(ft_name);
     }
 
@@ -151,9 +187,9 @@ module.exports = class Visualiser {
     });
     return this;
   }
-  
+
   spider = this.radar
-  grid = function(xScale){
+  grid = function (xScale) {
     console.log("kill me", xScale.ticks())
     return (g) => g
       .attr('class', 'grid-lines')
@@ -169,29 +205,64 @@ module.exports = class Visualiser {
     axisYHeight = this.height / 2, axisXWidth = this.width / 2, pointRadius = 10,
     min_el = 0, max_el = 10, tickCount = -1, tickFormatter = (x) => x, lineColor = "green",
     lineWidth = 5, pointFill = (d) => "green", areaColor = "rgba(0,10,190, 0.6)", toIncludeDots = ["x", "y", "id"],
-    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i)=> "rgba(0,0,200,0.5)", xGridWidth = (i)=> 1,
-    yGridColour = (i)=> "rgba(0,0,200,0.5)", yGridWidth = xGridWidth, xFontSize = (i)=>"20px", yFontSize = xFontSize}) {
+    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
+    yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = xGridWidth, xFontSize = (i) => "20px", yFontSize = xFontSize }) {
+    let tmpxgw = xGridWidth
+    
+    if (!(xGridWidth instanceof Function)) {
+      if(Array.isArray(xGridWidth)){
+        
+        xGridWidth = (d,i) => tmpxgw[i%tmpxgw]
+      }else{
+        
+        xGridWidth = (i)=> tmpxgw
+      }
+    }
+    if (!(yGridWidth instanceof Function)) {
+      yGridWidth = (i) => yGridWidth
+    }
+
+    if (!(xGridColour instanceof Function)) {
+      xGridColour = (i) => xGridColour
+    }
+
+    if (!(yGridColour instanceof Function)) {
+      yGridColour = (i) => yGridColour
+    }
+
+    if (!(pointFill instanceof Function)) {
+      pointFill = (i) => pointFill
+    }
+
+
+    if (!(xFontSize instanceof Function)) {
+      xFontSize = (i) => xFontSize
+    }
+
+    if (!(yFontSize instanceof Function)) {
+      yFontSize = (i) => yFontSize
+    }
     data = [data]
     let yRange = [min_render, max_render];
     tickCount = tickCount == -1 ? max_el - min_el : tickCount;
-    xGridCount = xGridCount== -1 ? tickCount : xGridCount;
+    xGridCount = xGridCount == -1 ? tickCount : xGridCount;
     const xScale = d3.scaleLinear()
       .range([0, axisXWidth])
       .domain([min_el, max_el]);
-    
+
     let localSvg = this.svg.append("g")
       .style("user-select", "none")
       .attr("transform", `translate(${YOffset}, ${XOffset})`)
-    
+
     localSvg.append("g")
       .attr("transform", `translate(0, ${axisYHeight})`)
       .call(d3.axisBottom(xScale).ticks(tickCount).tickFormat(tickFormatter)).selectAll("text")
       .attr("transform", "translate(-20, 0) rotate(-45)")
-      .style("font-size", (i)=> xFontSize(i))
+      .style("font-size", (i) => xFontSize(i))
       .style("text-anchor", "end")
-      
-    
-    
+
+
+
 
     const yScale = d3.scaleLinear()
       .domain(yRange)
@@ -199,9 +270,9 @@ module.exports = class Visualiser {
     localSvg.append("g")
       // .attr("transform", `translate(100, 0)`)
       .call(d3.axisLeft(yScale)).selectAll("text")
-      .style("font-size", (i)=> yFontSize(i))
+      .style("font-size", (i) => yFontSize(i))
 
-    
+
     let i = 0;
     data.forEach((container) => {
       console.log(container)
@@ -210,34 +281,34 @@ module.exports = class Visualiser {
         .attr("d", d3.line()
           .x(function (d) { return xScale(d.x); })
           .y(function (d) { return yScale(d.y); })
-          
-          )
+
+        )
         .attr("stroke", lineColor)
         .attr("stroke-width", lineWidth)
         .attr("fill", areaColor)
         .attr("d", d3.area()
-          .x(function(d) { return xScale(d.x) })
+          .x(function (d) { return xScale(d.x) })
           .y0(yScale(0))
-          .y1(function(d) { return yScale(d.y) })
+          .y1(function (d) { return yScale(d.y) })
         )
         .classed("line-segment", true);
 
-        
-       
+
+
       localSvg.append('g').call(d3.axisBottom()
         .tickFormat("")
         .ticks(xGridCount)
         .tickSize(axisYHeight)
         .scale(xScale)).selectAll("line")
-        .attr("stroke", (i)=>xGridColour(i))
-        .attr("stroke-width",(i)=> xGridWidth(i));
+        .attr("stroke", (i) => xGridColour(i))
+        .attr("stroke-width", (i) => xGridWidth(i));
       localSvg.append('g').call(d3.axisLeft()
-          .tickFormat("")
-          .ticks(yGridCount)
-          .tickSize(-axisXWidth)
-          .scale(yScale)).selectAll("line")
-          .attr("stroke", (i)=>yGridColour(i))
-          .attr("stroke-width",(i)=> yGridWidth(i));  
+        .tickFormat("")
+        .ticks(yGridCount)
+        .tickSize(-axisXWidth)
+        .scale(yScale)).selectAll("line")
+        .attr("stroke", (i) => yGridColour(i))
+        .attr("stroke-width", (i) => yGridWidth(i));
 
       let ret = localSvg.selectAll("dot")
         .data(container).enter()
@@ -245,7 +316,7 @@ module.exports = class Visualiser {
         .attr("cx", function (d) { return xScale(d.x); })
         .attr("cy", function (d) { return yScale(d.y); })
         .attr("r", pointRadius)
-        .attr("fill", (d)=>pointFill(d))
+        .attr("fill", (d) => pointFill(d))
         .classed("line-dots", true);
       // .on("mouseover", (e, d) => {
       //   tooltip.setText(`${container.label}: ${d.value}`)
@@ -265,119 +336,154 @@ module.exports = class Visualiser {
       }
       i += 1;
     });
-    
+
     return this;
   }
   lines = function ({ data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
     axisYHeight = this.height / 2, axisXWidth = this.width / 2, pointRadius = 10,
     min_el = 0, max_el = 10, tickCount = -1, tickFormatter = (x) => x, lineColor = (i) => "green",
     lineWidth = (i) => 5, pointFill = (d) => "green", toIncludeDots = ["x", "y", "id"],
-    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i)=> "rgba(0,0,200,0.5)", xGridWidth = (i)=> 1,
-    yGridColour = (i)=> "rgba(0,0,200,0.5)", yGridWidth = xGridWidth, xFontSize = (i)=>"20px", yFontSize = xFontSize}) {
-      let yRange = [min_render, max_render];
-      tickCount = tickCount == -1 ? max_el - min_el : tickCount;
-      xGridCount = xGridCount== -1 ? tickCount : xGridCount;
-      const xScale = d3.scaleLinear()
-        .range([0, axisXWidth])
-        .domain([min_el, max_el]);
+    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
+    yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = xGridWidth, xFontSize = (i) => "20px", yFontSize = xFontSize }) {
       
-      let localSvg = this.svg.append("g")
-        .style("user-select", "none")
-        .attr("transform", `translate(${YOffset}, ${XOffset})`)
-      
-      localSvg.append("g")
-        .attr("transform", `translate(0, ${axisYHeight})`)
-        .call(d3.axisBottom(xScale).ticks(tickCount).tickFormat(tickFormatter)).selectAll("text")
-        .attr("transform", "translate(-20, 0) rotate(-45)")
-        .style("font-size", (i)=> xFontSize(i))
-        .style("text-anchor", "end")
-        
-      
-      
-  
-      const yScale = d3.scaleLinear()
-        .domain(yRange)
-        .range([axisYHeight, 0]);
-      localSvg.append("g")
-        // .attr("transform", `translate(100, 0)`)
-        .call(d3.axisLeft(yScale)).selectAll("text")
-        .style("font-size", (i)=> yFontSize(i))
-  
-      
-      let i = 0;
-      data.forEach((container) => {
-        console.log(container)
-        let ret1 = localSvg.append("path")
-          .datum(container)
-          .attr("d", d3.line()
-            .x(function (d) { return xScale(d.x); })
-            .y(function (d) { return yScale(d.y); })
-            
-            )
-          .attr("stroke", lineColor(i))
-          .attr("stroke-width", lineWidth(i))
-          .attr("fill", "none")
-          .classed("line-segment", true);
-  
+    let tmpxgw = xGridWidth  
+    if (!(xGridWidth instanceof Function)) {
+      if(Array.isArray(xGridWidth)){
           
-         
-        localSvg.append('g').call(d3.axisBottom()
-          .tickFormat("")
-          .ticks(xGridCount)
-          .tickSize(axisYHeight)
-          .scale(xScale)).selectAll("line")
-          .attr("stroke", (i)=>xGridColour(i))
-          .attr("stroke-width",(i)=> xGridWidth(i));
-        localSvg.append('g').call(d3.axisLeft()
-            .tickFormat("")
-            .ticks(yGridCount)
-            .tickSize(-axisXWidth)
-            .scale(yScale)).selectAll("line")
-            .attr("stroke", (i)=>yGridColour(i))
-            .attr("stroke-width",(i)=> yGridWidth(i));  
-  
-        let ret = localSvg.selectAll("dot")
-          .data(container).enter()
-          .append("circle")
-          .attr("cx", function (d) { return xScale(d.x); })
-          .attr("cy", function (d) { return yScale(d.y); })
-          .attr("r", pointRadius)
-          .attr("fill", (d) => pointFill(i))
-          .classed("line-dots", true);
-        // .on("mouseover", (e, d) => {
-        //   tooltip.setText(`${container.label}: ${d.value}`)
-        //         .setVisible();
-        //   d3.select(e.target).attr("fill", this.selectedCircleColor);
-        // })
-        // .on("mouseout", (e, d) => {
-        //   tooltip.setHidden();
-  
-        //   let oldColour;
-        //   if (this.inHighlights(d.date, containerIdx)) { oldColour = this.highlightedCircleColor; }
-        //   else { oldColour = container.colour; }
-        //   d3.select(e.target).attr("fill", oldColour);
-        // });
-        for (const v of toIncludeDots) {
-          ret.attr(v, d => d[v]);
-        }
-        i += 1;
-      });
-      
-      return this;
+        xGridWidth = (d,i) => tmpxgw[i%tmpxgw.length]
+      }else{
+        
+        xGridWidth = (i)=> tmpxgw
+      }
     }
+    if (!(yGridWidth instanceof Function)) {
+      yGridWidth = (i) => yGridWidth
+    }
+
+    if (!(xGridColour instanceof Function)) {
+      xGridColour = (i) => xGridColour
+    }
+
+    if (!(yGridColour instanceof Function)) {
+      yGridColour = (i) => yGridColour
+    }
+
+    if (!(pointFill instanceof Function)) {
+      pointFill = (i) => pointFill
+    }
+
+
+    if (!(xFontSize instanceof Function)) {
+      xFontSize = (i) => xFontSize
+    }
+
+    if (!(yFontSize instanceof Function)) {
+      yFontSize = (i) => yFontSize
+    }
+    let yRange = [min_render, max_render];
+    tickCount = tickCount == -1 ? max_el - min_el : tickCount;
+    xGridCount = xGridCount == -1 ? tickCount : xGridCount;
+    const xScale = d3.scaleLinear()
+      .range([0, axisXWidth])
+      .domain([min_el, max_el]);
+
+    let localSvg = this.svg.append("g")
+      .style("user-select", "none")
+      .attr("transform", `translate(${YOffset}, ${XOffset})`)
+
+    localSvg.append("g")
+      .attr("transform", `translate(0, ${axisYHeight})`)
+      .call(d3.axisBottom(xScale).ticks(tickCount).tickFormat(tickFormatter)).selectAll("text")
+      .attr("transform", "translate(-20, 0) rotate(-45)")
+      .style("font-size", (i) => xFontSize(i))
+      .style("text-anchor", "end")
+
+
+
+
+    const yScale = d3.scaleLinear()
+      .domain(yRange)
+      .range([axisYHeight, 0]);
+    localSvg.append("g")
+      // .attr("transform", `translate(100, 0)`)
+      .call(d3.axisLeft(yScale)).selectAll("text")
+      .style("font-size", (i) => yFontSize(i))
+
+
+    let i = 0;
+    data.forEach((container) => {
+      console.log(container)
+      let ret1 = localSvg.append("path")
+        .datum(container)
+        .attr("d", d3.line()
+          .x(function (d) { return xScale(d.x); })
+          .y(function (d) { return yScale(d.y); })
+
+        )
+        .attr("stroke", lineColor(i))
+        .attr("stroke-width", lineWidth(i))
+        .attr("fill", "none")
+        .classed("line-segment", true);
+
+
+
+      localSvg.append('g').call(d3.axisBottom()
+        .tickFormat("")
+        .ticks(xGridCount)
+        .tickSize(axisYHeight)
+        .scale(xScale)).selectAll("line")
+        .attr("stroke", (i) => xGridColour(i))
+        .attr("stroke-width", (i) => xGridWidth(i));
+      localSvg.append('g').call(d3.axisLeft()
+        .tickFormat("")
+        .ticks(yGridCount)
+        .tickSize(-axisXWidth)
+        .scale(yScale)).selectAll("line")
+        .attr("stroke", (i) => yGridColour(i))
+        .attr("stroke-width", (i) => yGridWidth(i));
+
+      let ret = localSvg.selectAll("dot")
+        .data(container).enter()
+        .append("circle")
+        .attr("cx", function (d) { return xScale(d.x); })
+        .attr("cy", function (d) { return yScale(d.y); })
+        .attr("r", pointRadius)
+        .attr("fill", (d) => pointFill(i))
+        .classed("line-dots", true);
+      // .on("mouseover", (e, d) => {
+      //   tooltip.setText(`${container.label}: ${d.value}`)
+      //         .setVisible();
+      //   d3.select(e.target).attr("fill", this.selectedCircleColor);
+      // })
+      // .on("mouseout", (e, d) => {
+      //   tooltip.setHidden();
+
+      //   let oldColour;
+      //   if (this.inHighlights(d.date, containerIdx)) { oldColour = this.highlightedCircleColor; }
+      //   else { oldColour = container.colour; }
+      //   d3.select(e.target).attr("fill", oldColour);
+      // });
+      for (const v of toIncludeDots) {
+        ret.attr(v, d => d[v]);
+      }
+      i += 1;
+    });
+
+    return this;
+  }
   connectedScatterPlots = this.lines
   line = function ({ data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
     axisYHeight = this.height / 2, axisXWidth = this.width / 2, pointRadius = 10,
     min_el = 0, max_el = 10, tickCount = 10, tickFormatter = (x) => x, lineColor = "green",
-    lineWidth = 5, pointFill = (d)=> "green", toInclude = ["value", "id"],
-    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i)=> "rgba(0,0,200,0.5)", xGridWidth = (i)=> 1,
-    yGridColour = (i)=> "rgba(0,0,200,0.5)", yGridWidth = (i)=> 1, xFontSize = (i)=>"20px", yFontSize = xFontSize }) {
+    lineWidth = 5, pointFill = (d) => "green", toInclude = ["value", "id"],
+    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
+    yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = (i) => 1, xFontSize = (i) => "20px", yFontSize = xFontSize }) {
     return this.lines({
       data: [data], min_render: min_render, max_render: max_render, YOffset: YOffset, XOffset: XOffset,
       axisYHeight: axisYHeight, axisXWidth: axisXWidth, pointRadius: pointRadius,
-      min_el: min_el, max_el: max_el, tickCount: tickCount, tickFormatter: tickFormatter, lineColor: (i)=>lineColor,
-      lineWidth: (i)=>lineWidth, pointFill: pointFill, toInclude: toInclude, yGridCount: yGridCount, xGridCount: xGridCount,
-      xGridColour: xGridColour, xGridWidth: xGridWidth, yGridColour: yGridColour, yGridWidth: yGridWidth, 
+      min_el: min_el, max_el: max_el, tickCount: tickCount, tickFormatter: tickFormatter, lineColor: (i) => lineColor,
+      lineWidth: (i) => lineWidth, pointFill: pointFill, toInclude: toInclude, yGridCount: yGridCount, xGridCount: xGridCount,
+      xGridColour: xGridColour, xGridWidth: xGridWidth, yGridColour: yGridColour, yGridWidth: yGridWidth,
       xFontSize: xFontSize, yFontSize: yFontSize
     })
   }
@@ -388,14 +494,14 @@ module.exports = class Visualiser {
   scatterPlot = function ({ data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
     axisYHeight = this.height / 2, axisXWidth = this.width / 2, pointRadius = 10,
     min_el = 0, max_el = 10, tickCount = 10, tickFormatter = (x) => x, pointFill = (d) => "green", toInclude: toInclude,
-    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i)=> "rgba(0,0,200,0.5)", xGridWidth = (i)=> 1,
-    yGridColour = (i)=> "rgba(0,0,200,0.5)", yGridWidth = (i)=> 1, xFontSize = (i)=>"20px", yFontSize = xFontSize }) {
+    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
+    yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = (i) => 1, xFontSize = (i) => "20px", yFontSize = xFontSize }) {
     return this.lines({
       data: [data], min_render: min_render, max_render: max_render, YOffset: YOffset, XOffset: XOffset,
       axisYHeight: axisYHeight, axisXWidth: axisXWidth, pointRadius: pointRadius,
       min_el: min_el, max_el: max_el, tickCount: tickCount, tickFormatter: tickFormatter, lineColor: (i) => "green",
       lineWidth: (i) => 0, pointFill: pointFill, toInclude: toInclude, yGridCount: yGridCount, xGridCount: xGridCount,
-      xGridColour: xGridColour, xGridWidth: xGridWidth, yGridColour: yGridColour, yGridWidth: yGridWidth, 
+      xGridColour: xGridColour, xGridWidth: xGridWidth, yGridColour: yGridColour, yGridWidth: yGridWidth,
       xFontSize: xFontSize, yFontSize: yFontSize
     })
   }
@@ -403,13 +509,25 @@ module.exports = class Visualiser {
 
   bar = function ({ data, max_val = undefined, min_val = undefined, YOffset = 100, XOffset = 100, axisYHeight = this.height / 2, axisXWidth = this.width / 2,
     strokeWidth = 2, strokeColor = "black", barMargin = 0, colorBar = (d) => "blue", fontSize = (d) => "15px", yFontSize = "15px",
-    toInclude = ["value", "id"], yGridCount = max_val,  yGridColour = (i)=> "rgba(0,0,200,0.5)", yGridWidth = (i)=> 1}) {
+    toInclude = ["value", "id"], yGridCount = max_val, yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = (i) => 1 }) {
 
 
 
+    if (!(yGridColour instanceof Function)) {
+      yGridColour = (i) => yGridColour
+    }
+    if (!(yGridWidth instanceof Function)) {
+      yGridWidth = (i) => yGridWidth
+    }
+    if (!(fontSize instanceof Function)) {
+      fontSize = (d) => fontSize
+    }
+    if (!(colorBar instanceof Function)) {
+      colorBar = (d) => colorBar
+    }
 
     const max_el = max_val == undefined ? data.reduce((acc, e1) => acc = acc > e1.value ? acc : e1.value, -Infinity) : max_val;
-    const min_el = min_val == undefined ? data.reduce((acc, e1) => acc = acc < e1.value-1 ? acc : e1.value-1, Infinity) : min_val;
+    const min_el = min_val == undefined ? data.reduce((acc, e1) => acc = acc < e1.value - 1 ? acc : e1.value - 1, Infinity) : min_val;
     yGridCount = yGridCount == undefined ? max_el : yGridCount;
     let localSvg = this.svg.append("g")
       .style("user-select", "none")
@@ -438,14 +556,14 @@ module.exports = class Visualiser {
     localSvg.append("g")
       .call(d3.axisLeft(y))
       .attr("font-size", yFontSize);
-      
+
     localSvg.append('g').call(d3.axisLeft()
       .tickFormat("")
       .ticks(yGridCount)
       .tickSize(-axisXWidth)
       .scale(y)).selectAll("line")
-      .attr("stroke", (i)=>yGridColour(i))
-      .attr("stroke-width",(i)=> yGridWidth(i));    
+      .attr("stroke", (i) => yGridColour(i))
+      .attr("stroke-width", (i) => yGridWidth(i));
 
     // Create and fill the bars
     let ret = localSvg.selectAll("bars")

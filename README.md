@@ -259,3 +259,26 @@ xFontSize -> callable - for each tick label on the x-axis define a font size (de
 yFontSize -> callable - for each tick label on the y-axis define a font size (default: same as xFontSize)<br/>
 xGridWidth -> callable - for each tick on the x-axis provide a thickness (default: (i)=> 1)<br/>
 yGridWidth -> callable - for each tick on the y-axis provide a thickness (default: same as xGridWidth)<br/>
+
+
+### Legend:
+
+Adds a legend:
+
+```js
+    const visualiser = require('visualiser');
+    const inst = new visualiser({width : 1200, height : 1200});
+    const exampleDataLines = [[{x: 1, y: 300},{x: 2, y: 5},{x: 3, y: 8},{x: 4, y: 2}],[{x: 6, y: 6},{x: 7, y: 20},{x: 8, y: 12},{x: 10, y: 108},{x: 12, y: 54}]];
+    let lines = inst.lines({data: exampleDataLines,  max_el: 13, lineWidth : (i) =>4, max_render: 500, lineColor : (i) => i == 0 ? "blue" : "orange", pointFill : (i) => "rgba(0,0,0,0)"});
+    lines.legend({data: ["Profits", "Decline"], colours: ["blue", "orange"]})
+```
+
+![Bar Plot](./imgs/legend.png)
+
+<br/>
+The data array consists only of strings. Other parameters:<br/>
+colours -> array, callable, or just a string - the colours of each dot and text (default: green)<br/>
+y -> the starting y of the legend (default this.height*0.15)<br/>
+x -> the starting x of the legend (default this.width-0.5*this.width)<br/>
+distance_elms -> distance between elements (default 25) <br/>
+dotRadius-> radius of each dot (default 5)<br/>
