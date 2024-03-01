@@ -15,6 +15,8 @@ To render (currently is equated to obtaining the HTML of the object - can be ret
     inst.visualise();
 ```
 
+All functions have parameters which can either be a function (so for which point return a value) or an array (which specifies for each value an intended result. The array doesn't need to be the same length as the values that map to it. Values are picked with i % array.length, as it loops around).
+
 Currently supports:
 
 ### Radar (spider) chart:
@@ -46,13 +48,13 @@ labelFontSize -> the font size of the labels (default 10)<br/>
 
 ticks -> array of numbers, giving which tick values to be shown on the spider chart (default [1, 2.5, 5, 7.5, 10] - this will show the position of the 1st, 2.5th, 5th, ect. values on the spider chart)<br/>
 
-strokeColor -> function taking a tick value and mapping it to a colour (default (t) => "black")<br/>
+strokeColor -> function or array taking a tick value and mapping it to a colour (default (t) => "black")<br/>
 
-strokeHighlight -> function taking a tick value and mapping it to width size (default (t) => t%5==0 ? 5 : 3)<br/>
+strokeHighlight -> function or array taking a tick value and mapping it to width size (default (t) => t%5==0 ? 5 : 3)<br/>
 
-axisColor -> function taking an axis number and mapping it to a colour (default (i) => "black")<br/>
+axisColor -> function or array taking an axis number and mapping it to a colour (default (i) => "black")<br/>
 
-axisWidth -> function taking an axis number and mapping it to a width size (default (i) => 1)<br/>
+axisWidth -> function or array taking an axis number and mapping it to a width size (default (i) => 1)<br/>
 
 
 
@@ -109,7 +111,7 @@ max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
 lineWidth -> width of line (default : 5)<br/>
 lineColor -> color of line (default : "green")<br/>
-pointFill -> function, which given point returns a colour (default: (d) => "green")<br/>
+pointFill -> function or array, which given point returns a colour (default: (d) => "green")<br/>
 toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 xGridCount -> number of grid lines on the x-axis<br/>
 yGridCount -> number of grid lines on the y-axis<br/>
@@ -142,9 +144,9 @@ pointRadius -> the radius of each point<br/>
 min_el -> The smallest value on the x-axis<br/>
 max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
-pointFill -> function, which given the point returns a colour (default: (d) => "green")<br/>
-lineWidth -> function, which given the index of the line, returns its width (default : (i) => 5)<br/>
-lineColor -> function, which given the index of the line, returns the color of line (default : (i) => "green")<br/>
+pointFill -> function or array, which given the point returns a colour (default: (d) => "green")<br/>
+lineWidth -> function or array, which given the index of the line, returns its width (default : (i) => 5)<br/>
+lineColor -> function or array, which given the index of the line, returns the color of line (default : (i) => "green")<br/>
 toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 xGridCount -> number of grid lines on the x-axis<br/>
 yGridCount -> number of grid lines on the y-axis<br/>
@@ -179,8 +181,8 @@ pointRadius -> the radius of each point<br/>
 min_el -> The smallest value on the x-axis<br/>
 max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
-pointFill -> function, which given the point returns a colour (default: (d) => "green")<br/>
-pointFill -> function, which given the index of the point, returns a colour<br/>
+pointFill -> function or array, which given the point returns a colour (default: (d) => "green")<br/>
+pointFill -> function or array, which given the index of the point, returns a colour<br/>
 toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 xGridCount -> number of grid lines on the x-axis<br/>
 yGridCount -> number of grid lines on the y-axis<br/>
@@ -213,8 +215,8 @@ max_val -> highest value to display on y-axis (by default undefined meaning that
 min_val -> smallest value to display on y-axis (by default undefined meaning that the value will be foudn from the data given. NOTE: in order for all data to be displayed the value taken from data is biased by an additional factor of -1)<br/>
 axisYHeight -> height of y-axis<br/>
 axisXWidth -> width of x-axis<br/>
-colorBar -> function which given an element returns a colour for it<br/>
-fontSize -> function which given an element returns a font size for it<br/>
+colorBar -> function or array which given an element returns a colour for it<br/>
+fontSize -> function or array which given an element returns a font size for it<br/>
 yFontSize -> give the font for the y-axis<br/>
 toInclude -> array of attributes to be included in the final elements! By default value and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 yGridCount -> number of grid lines on the y-axis (by default -1, meaning it will use the value of the max_el)<br/>
@@ -248,7 +250,7 @@ max_el -> The largest value on the x-axis<br/>
 tickCount -> How many values to be on the x-axis<br/>
 lineWidth -> width of line (default : 5)<br/>
 lineColor -> color of line (default : "green")<br/>
-pointFill -> function, which given point returns a colour (default: (d) => "green")<br/>
+pointFill -> function or array, which given point returns a colour (default: (d) => "green")<br/>
 areaColor -> the color of the area under the curve (default: "rgba(0,10,190, 0.6)")<br/>
 toInclude -> array of attributes to be included in the final elements! By default x and id are saved for each! YOU CAN USE THIS FOR INTERACTIVITY!<br/>
 xGridCount -> number of grid lines on the x-axis<br/>
@@ -281,4 +283,5 @@ colours -> array, callable, or just a string - the colours of each dot and text 
 y -> the starting y of the legend (default this.height*0.15)<br/>
 x -> the starting x of the legend (default this.width-0.5*this.width)<br/>
 distance_elms -> distance between elements (default 25) <br/>
-dotRadius-> radius of each dot (default 5)<br/>
+dotRadius -> radius of each dot (default 5)<br/>
+backgroundColour -> specifies the background of the legend (default: rgba(240,240,240,0.8))<br/>

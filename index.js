@@ -16,39 +16,50 @@ module.exports = class Visualiser {
     return this.d3n.html();
   }
 
-  legend = function ({ data, colours = (i) => "green", y = this.height*0.15, x = this.width-0.5*this.width, distance_elms = 25, dotRadius = 5 }) {
+  legend = function ({ data, colours = (i) => "green", y = this.height * 0.15, x = this.width - 0.5 * this.width, distance_elms = 25, dotRadius = 5,
+    backgroundColour = "rgba(240,240,240, 0.8)" }) {
     let tmp = colours
-    if(!(colours instanceof Function)){
-      if(Array.isArray(colours)){
-        
-        colours = (d,i) => tmp[i%tmp.length]
-      }else{
-        
-        colours = (i)=> tmp
+    if (!(colours instanceof Function)) {
+      if (Array.isArray(colours)) {
+
+        colours = (d, i) => tmp[i % tmp.length]
+      } else {
+
+        colours = (i) => tmp
       }
-      
+
     }
     y = Math.floor(y)
     x = Math.floor(x)
-    this.svg.selectAll("dots")
+    let svgLocal = this.svg.append("g")
+    .style("user-select", "none")
+    .attr("transform", `translate(${x}, ${y})`)
+    svgLocal.append("rect")
+    .attr("width", "90px")
+    .attr("height", `${data.length * distance_elms + 10}px` )
+    .attr("transform", `translate(${-10}, ${-10})`)
+    .attr("fill", backgroundColour);
+    svgLocal.selectAll("dots")
       .data(data)
       .enter()
       .append("circle")
-      .attr("cx", x)
-      .attr("cy", function (d, i) { return y + i * distance_elms })
+      .attr("cx", 3)
+      .attr("cy", function (d, i) { return i * distance_elms })
       .attr("r", dotRadius)
       .style("fill", colours)
 
-    this.svg.selectAll("labels")
+      svgLocal.selectAll("labels")
       .data(data)
       .enter()
       .append("text")
-      .attr("x", x + 3 * dotRadius)
-      .attr("y", function (d, i) { return y + i * distance_elms })
+      .attr("x", 3 * dotRadius)
+      .attr("y", function (d, i) { return i * distance_elms })
       .style("fill", colours)
       .text(function (d) { return d })
       .attr("text-anchor", "left")
       .style("alignment-baseline", "middle")
+      
+
     return this;
   }
   donut = function ({ data, outterRadius = 70, innerRadius = 60,
@@ -57,6 +68,10 @@ module.exports = class Visualiser {
     toInclude = ["value", "id"] }) {
 
 
+    if (!Array.isArray(colorRange)) {
+      colorRange = [colorRange]
+
+    }
 
     const color = d3.scaleOrdinal()
       .domain(domain)
@@ -95,6 +110,13 @@ module.exports = class Visualiser {
     strokeColor = (t) => "black", strokeHighlight = (t) => t % 5 == 0 ? 5 : 3,
     axisColor = (i) => "black", axisWidth = (i) => 1,
     toInclude = ["value", "id"] }) {
+
+    if (!Array.isArray(fillColors)) {
+      fillColors = [fillColors]
+
+    }
+
+
     const polyscale = d3.scaleLinear()
       .domain([0, 10])
       .range([0, maxRadius]);
@@ -190,7 +212,7 @@ module.exports = class Visualiser {
 
   spider = this.radar
   grid = function (xScale) {
-    console.log("kill me", xScale.ticks())
+    
     return (g) => g
       .attr('class', 'grid-lines')
       .selectAll('line')
@@ -208,39 +230,85 @@ module.exports = class Visualiser {
     yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
     yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = xGridWidth, xFontSize = (i) => "20px", yFontSize = xFontSize }) {
     let tmpxgw = xGridWidth
-    
+
     if (!(xGridWidth instanceof Function)) {
-      if(Array.isArray(xGridWidth)){
-        
-        xGridWidth = (d,i) => tmpxgw[i%tmpxgw]
-      }else{
-        
-        xGridWidth = (i)=> tmpxgw
+      if (Array.isArray(xGridWidth)) {
+
+        xGridWidth = (i) => tmpxgw[i % tmpxgw.length]
+      } else {
+
+        xGridWidth = (i) => tmpxgw
       }
     }
+    let tmpygw = yGridWidth
+
     if (!(yGridWidth instanceof Function)) {
-      yGridWidth = (i) => yGridWidth
+      if (Array.isArray(yGridWidth)) {
+
+        yGridWidth = (i) => tmpygw[i % tmpygw.length]
+      } else {
+
+        yGridWidth = (i) => tmpygw
+      }
     }
+    let tmxgridcolor = xGridColour
 
     if (!(xGridColour instanceof Function)) {
-      xGridColour = (i) => xGridColour
+      if (Array.isArray(xGridColour)) {
+
+        xGridColour = (i) => tmxgridcolor[i % tmxgridcolor.length]
+      } else {
+
+        xGridColour = (i) => tmxgridcolor
+      }
     }
+    
+    let tmygridcolor = yGridColour
 
     if (!(yGridColour instanceof Function)) {
-      yGridColour = (i) => yGridColour
+      if (Array.isArray(yGridColour)) {
+
+        yGridColour = (i) => tmygridcolor[i % tmygridcolor.length]
+      } else {
+
+        yGridColour = (i) => tmygridcolor
+      }
     }
+
+    let tmpointfill = pointFill
 
     if (!(pointFill instanceof Function)) {
-      pointFill = (i) => pointFill
+      if (Array.isArray(pointFill)) {
+
+        pointFill = (d, i) => tmpointfill[i % tmpointfill.length]
+      } else {
+
+        pointFill = (i) => tmpointfill
+      }
     }
 
+    let tmxfontsz = xFontSize
 
     if (!(xFontSize instanceof Function)) {
-      xFontSize = (i) => xFontSize
+      if (Array.isArray(xFontSize)) {
+
+        xFontSize = (i) => tmxfontsz[i % tmxfontsz.length]
+      } else {
+
+        xFontSize = (i) => tmxfontsz
+      }
     }
 
+    let tmyfontsz = yFontSize
+
     if (!(yFontSize instanceof Function)) {
-      yFontSize = (i) => yFontSize
+      if (Array.isArray(yFontSize)) {
+
+        yFontSize = (i) => tmyfontsz[i % tmyfontsz.length]
+      } else {
+
+        yFontSize = (i) => tmyfontsz
+      }
     }
     data = [data]
     let yRange = [min_render, max_render];
@@ -253,7 +321,8 @@ module.exports = class Visualiser {
     let localSvg = this.svg.append("g")
       .style("user-select", "none")
       .attr("transform", `translate(${YOffset}, ${XOffset})`)
-
+      
+      
     localSvg.append("g")
       .attr("transform", `translate(0, ${axisYHeight})`)
       .call(d3.axisBottom(xScale).ticks(tickCount).tickFormat(tickFormatter)).selectAll("text")
@@ -275,7 +344,7 @@ module.exports = class Visualiser {
 
     let i = 0;
     data.forEach((container) => {
-      console.log(container)
+      
       let ret1 = localSvg.append("path")
         .datum(container)
         .attr("d", d3.line()
@@ -345,41 +414,108 @@ module.exports = class Visualiser {
     lineWidth = (i) => 5, pointFill = (d) => "green", toIncludeDots = ["x", "y", "id"],
     yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
     yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = xGridWidth, xFontSize = (i) => "20px", yFontSize = xFontSize }) {
-      
-    let tmpxgw = xGridWidth  
-    if (!(xGridWidth instanceof Function)) {
-      if(Array.isArray(xGridWidth)){
-          
-        xGridWidth = (d,i) => tmpxgw[i%tmpxgw.length]
-      }else{
-        
-        xGridWidth = (i)=> tmpxgw
+      let tmplw = lineWidth
+      if (!(lineWidth instanceof Function)) {
+        if (Array.isArray(lineWidth)) {
+  
+          lineWidth = (i) => tmplw[i % tmplw.length]
+        } else {
+  
+          lineWidth = (i) => tmplw
+        }
       }
-    }
-    if (!(yGridWidth instanceof Function)) {
-      yGridWidth = (i) => yGridWidth
-    }
+      
+      let tmplc = lineColor
+      if (!(lineColor instanceof Function)) {
+        if (Array.isArray(lineColor)) {
+          
+          lineColor = (i) => tmplc[i % tmplc.length]
+        } else {
+  
+          lineColor = (i) => tmplc
+        }
+      }
+      let tmpxgw = xGridWidth
 
-    if (!(xGridColour instanceof Function)) {
-      xGridColour = (i) => xGridColour
-    }
-
-    if (!(yGridColour instanceof Function)) {
-      yGridColour = (i) => yGridColour
-    }
-
-    if (!(pointFill instanceof Function)) {
-      pointFill = (i) => pointFill
-    }
-
-
-    if (!(xFontSize instanceof Function)) {
-      xFontSize = (i) => xFontSize
-    }
-
-    if (!(yFontSize instanceof Function)) {
-      yFontSize = (i) => yFontSize
-    }
+      if (!(xGridWidth instanceof Function)) {
+        if (Array.isArray(xGridWidth)) {
+  
+          xGridWidth = (i) => tmpxgw[i % tmpxgw.length]
+        } else {
+  
+          xGridWidth = (i) => tmpxgw
+        }
+      }
+      let tmpygw = yGridWidth
+  
+      if (!(yGridWidth instanceof Function)) {
+        if (Array.isArray(yGridWidth)) {
+  
+          yGridWidth = (i) => tmpygw[i % tmpygw.length]
+        } else {
+  
+          yGridWidth = (i) => tmpygw
+        }
+      }
+      let tmxgridcolor = xGridColour
+  
+      if (!(xGridColour instanceof Function)) {
+        if (Array.isArray(xGridColour)) {
+  
+          xGridColour = (i) => tmxgridcolor[i % tmxgridcolor.length]
+        } else {
+  
+          xGridColour = (i) => tmxgridcolor
+        }
+      }
+      
+      let tmygridcolor = yGridColour
+  
+      if (!(yGridColour instanceof Function)) {
+        if (Array.isArray(yGridColour)) {
+  
+          yGridColour = (i) => tmygridcolor[i % tmygridcolor.length]
+        } else {
+  
+          yGridColour = (i) => tmygridcolor
+        }
+      }
+  
+      let tmpointfill = pointFill
+  
+      if (!(pointFill instanceof Function)) {
+        if (Array.isArray(pointFill)) {
+  
+          pointFill = (i) => tmpointfill[i % tmpointfill.length]
+        } else {
+  
+          pointFill = (i) => tmpointfill
+        }
+      }
+  
+      let tmxfontsz = xFontSize
+  
+      if (!(xFontSize instanceof Function)) {
+        if (Array.isArray(xFontSize)) {
+  
+          xFontSize = (i) => tmxfontsz[i % tmxfontsz.length]
+        } else {
+  
+          xFontSize = (i) => tmxfontsz
+        }
+      }
+  
+      let tmyfontsz = yFontSize
+  
+      if (!(yFontSize instanceof Function)) {
+        if (Array.isArray(yFontSize)) {
+  
+          yFontSize = (i) => tmyfontsz[i % tmyfontsz.length]
+        } else {
+  
+          yFontSize = (i) => tmyfontsz
+        }
+      }
     let yRange = [min_render, max_render];
     tickCount = tickCount == -1 ? max_el - min_el : tickCount;
     xGridCount = xGridCount == -1 ? tickCount : xGridCount;
@@ -412,7 +548,7 @@ module.exports = class Visualiser {
 
     let i = 0;
     data.forEach((container) => {
-      console.log(container)
+      
       let ret1 = localSvg.append("path")
         .datum(container)
         .attr("d", d3.line()
@@ -582,17 +718,6 @@ module.exports = class Visualiser {
     for (const v of toInclude) {
       ret.attr(v, d => d[v]);
     }
-
-
-
-    // .on("mouseover", (e, d) => {
-    //   console.log("over")
-    // })
-    // .on("mouseout", (e, d) => {
-    //   tooltip.setHidden();
-    //   if (highlighted.includes(d.Name)) { d3.select(e.target).attr("fill", gameBarColor); }
-    //   else { d3.select(e.target).attr("fill", barColor); }
-    // });
 
     return this;
   }
