@@ -29,13 +29,17 @@ module.exports = class Visualiser {
       }
 
     }
+    let mx_l = 0
+    for(const el in data){
+      mx_l = data[el].length > mx_l ? data[el].length : mx_l
+    }
     y = Math.floor(y)
     x = Math.floor(x)
     let svgLocal = this.svg.append("g")
     .style("user-select", "none")
     .attr("transform", `translate(${x}, ${y})`)
     svgLocal.append("rect")
-    .attr("width", "90px")
+    .attr("width", `${mx_l*9}`)
     .attr("height", `${data.length * distance_elms + 10}px` )
     .attr("transform", `translate(${-10}, ${-10})`)
     .attr("fill", backgroundColour);
@@ -223,14 +227,78 @@ module.exports = class Visualiser {
       .attr('y1', 0)
       .attr('y2', 10000)
   }
-  auc = function ({ data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
+  auc = function ({ data, min_render = undefined, max_render = undefined, YOffset = 100, XOffset = 100,
     axisYHeight = this.height / 2, axisXWidth = this.width / 2, pointRadius = 10,
-    min_el = 0, max_el = 10, tickCount = -1, tickFormatter = (x) => x, lineColor = "green",
+    min_el = undefined, max_el = undefined, tickCount = -1, tickFormatter = (x) => x, lineColor = "green",
     lineWidth = 5, pointFill = (d) => "green", areaColor = "rgba(0,10,190, 0.6)", toIncludeDots = ["x", "y", "id"],
-    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
+    yGridCount = undefined, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
     yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = xGridWidth, xFontSize = (i) => "20px", yFontSize = xFontSize }) {
     let tmpxgw = xGridWidth
+    data = [data]
+    let tmp_data = []
+      let minvaltmp = 0;
+      let maxvaltmp = -Infinity;
+      let minx = 0;
+      let maxx = -Infinity;
+      for(const ln in data){
+        let tmpmid = []
+        let i = 0;
+        for(const el in data[ln]){
+          let toadd = {}
+          let flag = false
+          if(data[ln][el].y == undefined){
+            toadd.y = data[ln][el]
+            
+            
+            
+          }else{
+            toadd.y = data[ln][el].y
+          }
+          minvaltmp = Math.min(minvaltmp,toadd.y )
+          maxvaltmp = Math.max(maxvaltmp,toadd.y * 1.2 )
+          if(max_render != undefined && toadd.y > max_render ){
+            toadd.x = i - 1 + Math.max(1.0/Math.abs(toadd.y/max_render),0.1)
+            toadd.y = Math.min(max_render, toadd.y)
+            
+            console.log(toadd.y)
+            flag = true;
+          }
+          if(min_render != undefined && toadd.y < min_render ){
+            toadd.x = i - 1 + Math.max(1/Math.abs(min_render - toadd.y),0.1)
+            toadd.y = Math.min(min_render,toadd.y)
+            
+            flag = true;
+          }
+          if(flag){
+            i+= 1
+            minx = Math.min(minx,toadd.x)
+            maxx = Math.max(maxx,toadd.x + 2)
+            tmpmid.push(toadd)
+            continue
+          }
+          if(data[ln][el].x == undefined){
+            toadd.x = i
+            i+= 1
+          }else{
+            toadd.x = data[ln][el].x
+            i = toadd.x
+          }
+          minx = Math.min(minx,toadd.x)
+          maxx = Math.max(maxx,toadd.x + 2)
+          tmpmid.push(toadd)
+        }
+        tmp_data.push(tmpmid)
+      }
 
+      data = tmp_data
+      min_el = min_el == undefined ? minx : min_el
+      max_el = max_el == undefined ? maxx : max_el
+      min_render = min_render == undefined ? minvaltmp : min_render
+      max_render = max_render == undefined ? maxvaltmp : max_render
+      max_el = Math.floor(max_el)
+      console.log("done", data)
+      yGridCount = yGridCount == undefined ? Math.min(10,max_render - min_render) : yGridCount
+      console.log(yGridCount, min_el, max_el)
     if (!(xGridWidth instanceof Function)) {
       if (Array.isArray(xGridWidth)) {
 
@@ -310,7 +378,7 @@ module.exports = class Visualiser {
         yFontSize = (i) => tmyfontsz
       }
     }
-    data = [data]
+    
     let yRange = [min_render, max_render];
     tickCount = tickCount == -1 ? max_el - min_el : tickCount;
     xGridCount = xGridCount == -1 ? tickCount : xGridCount;
@@ -408,12 +476,77 @@ module.exports = class Visualiser {
 
     return this;
   }
-  lines = function ({ data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
+  lines = function ({ data, min_render = undefined, max_render = undefined, YOffset = 100, XOffset = 100,
     axisYHeight = this.height / 2, axisXWidth = this.width / 2, pointRadius = 10,
-    min_el = 0, max_el = 10, tickCount = -1, tickFormatter = (x) => x, lineColor = (i) => "green",
+    min_el = undefined, max_el = undefined, tickCount = -1, tickFormatter = (x) => x, lineColor = (i) => "green",
     lineWidth = (i) => 5, pointFill = (d) => "green", toIncludeDots = ["x", "y", "id"],
-    yGridCount = max_el - min_el, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
+    yGridCount = undefined, xGridCount = tickCount, xGridColour = (i) => "rgba(0,0,200,0.5)", xGridWidth = (i) => 1,
     yGridColour = (i) => "rgba(0,0,200,0.5)", yGridWidth = xGridWidth, xFontSize = (i) => "20px", yFontSize = xFontSize }) {
+      let tmp_data = []
+      let minvaltmp = 0;
+      let maxvaltmp = -Infinity;
+      let minx = 0;
+      let maxx = -Infinity;
+      for(const ln in data){
+        let tmpmid = []
+        let i = 0;
+        for(const el in data[ln]){
+          let toadd = {}
+          let flag = false
+          if(data[ln][el].y == undefined){
+            toadd.y = data[ln][el]
+            
+            
+            
+          }else{
+            toadd.y = data[ln][el].y
+          }
+          minvaltmp = Math.min(minvaltmp,toadd.y )
+          maxvaltmp = Math.max(maxvaltmp,toadd.y * 1.2 )
+          if(max_render != undefined && toadd.y > max_render ){
+            toadd.x = i - 1 + Math.max(1.0/Math.abs(toadd.y/max_render),0.1)
+            toadd.y = Math.min(max_render, toadd.y)
+            
+            console.log(toadd.y)
+            flag = true;
+          }
+          if(min_render != undefined && toadd.y < min_render ){
+            toadd.x = i - 1 + Math.max(1/Math.abs(min_render - toadd.y),0.1)
+            toadd.y = Math.min(min_render,toadd.y)
+            
+            flag = true;
+          }
+          if(flag){
+            i+= 1
+            minx = Math.min(minx,toadd.x)
+            maxx = Math.max(maxx,toadd.x + 2)
+            tmpmid.push(toadd)
+            continue
+          }
+          if(data[ln][el].x == undefined){
+            toadd.x = i
+            i+= 1
+          }else{
+            toadd.x = data[ln][el].x
+            i = toadd.x
+          }
+          minx = Math.min(minx,toadd.x)
+          maxx = Math.max(maxx,toadd.x + 2)
+          tmpmid.push(toadd)
+        }
+        tmp_data.push(tmpmid)
+      }
+
+      data = tmp_data
+      min_el = min_el == undefined ? minx : min_el
+      max_el = max_el == undefined ? maxx : max_el
+      min_render = min_render == undefined ? minvaltmp : min_render
+      max_render = max_render == undefined ? maxvaltmp : max_render
+      max_el = Math.floor(max_el)
+      console.log("done", data)
+      yGridCount = yGridCount == undefined ? Math.min(10,max_render - min_render): yGridCount
+      console.log(yGridCount, min_el, max_el)
+      
       let tmplw = lineWidth
       if (!(lineWidth instanceof Function)) {
         if (Array.isArray(lineWidth)) {
@@ -604,7 +737,7 @@ module.exports = class Visualiser {
       }
       i += 1;
     });
-
+    console.log("done")
     return this;
   }
   connectedScatterPlots = this.lines
