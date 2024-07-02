@@ -260,7 +260,7 @@ module.exports = class Visualiser {
             toadd.x = i - 1 + Math.max(1.0/Math.abs(toadd.y/max_render),0.1)
             toadd.y = Math.min(max_render, toadd.y)
             
-            console.log(toadd.y)
+            // console.log(toadd.y)
             flag = true;
           }
           if(min_render != undefined && toadd.y < min_render ){
@@ -296,9 +296,9 @@ module.exports = class Visualiser {
       min_render = min_render == undefined ? minvaltmp : min_render
       max_render = max_render == undefined ? maxvaltmp : max_render
       max_el = Math.floor(max_el)
-      console.log("done", data)
+      // console.log("done", data)
       yGridCount = yGridCount == undefined ? Math.min(10,max_render - min_render) : yGridCount
-      console.log(yGridCount, min_el, max_el)
+      // console.log(yGridCount, min_el, max_el)
     if (!(xGridWidth instanceof Function)) {
       if (Array.isArray(xGridWidth)) {
 
@@ -507,7 +507,7 @@ module.exports = class Visualiser {
             toadd.x = i - 1 + Math.max(1.0/Math.abs(toadd.y/max_render),0.1)
             toadd.y = Math.min(max_render, toadd.y)
             
-            console.log(toadd.y)
+            // console.log(toadd.y)
             flag = true;
           }
           if(min_render != undefined && toadd.y < min_render ){
@@ -543,9 +543,9 @@ module.exports = class Visualiser {
       min_render = min_render == undefined ? minvaltmp : min_render
       max_render = max_render == undefined ? maxvaltmp : max_render
       max_el = Math.floor(max_el)
-      console.log("done", data)
+      // console.log("done", data)
       yGridCount = yGridCount == undefined ? Math.min(10,max_render - min_render): yGridCount
-      console.log(yGridCount, min_el, max_el)
+      // console.log(yGridCount, min_el, max_el)
       
       let tmplw = lineWidth
       if (!(lineWidth instanceof Function)) {
@@ -737,7 +737,7 @@ module.exports = class Visualiser {
       }
       i += 1;
     });
-    console.log("done")
+    // console.log("done")
     return this;
   }
   connectedScatterPlots = this.lines
