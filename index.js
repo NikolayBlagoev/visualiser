@@ -741,7 +741,7 @@ module.exports = class Visualiser {
     return this;
   }
   connectedScatterPlots = this.lines
-  line = function ({ data, min_render = 0, max_render = 1000, YOffset = 100, XOffset = 100,
+  line = function ({ data, min_render = undefined, max_render = undefined, YOffset = 100, XOffset = 100,
     axisYHeight = this.height / 2, axisXWidth = this.width / 2, pointRadius = 10,
     min_el = 0, max_el = 10, tickCount = 10, tickFormatter = (x) => x, lineColor = "green",
     lineWidth = 5, pointFill = (d) => "green", toInclude = ["value", "id"],
